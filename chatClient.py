@@ -12,6 +12,7 @@ class Client:
 
     def sendMsg(self, username, sock):
         while True:
+            print("Hello")
             sock.send(bytes(username + " : " + input(""),'utf-8'))
             self.delete_last_lines(1)
 
