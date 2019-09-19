@@ -8,7 +8,6 @@ from datetime import datetime
 class Server:
     connections = []
     lenConnections = len(connections)
-    peers = []
     lastMessages = []
     encoding = "iso-8859-1"
     dateTimeObj = datetime.now()
@@ -27,10 +26,8 @@ class Server:
                 cThread.daemon = True
                 cThread.start()
                 self.connections.append(c)
-                self.peers.append(a[0])
                 #print(str(a[0]) + " : " + str(a[1]), "connected")
                 print("%s : %s : %s connected" % (self.timeStampStr,str(a[0]),str(a[1])))
-                self.sendPeers()
 
 
     def handler(self,c,a):
@@ -39,12 +36,14 @@ class Server:
 
             if len(self.lastMessages) < 10 and data != b'\x12':
                 self.lastMessages.append(data)
-            else:
+            elif data != b'\x12':
                 self.lastMessages.append(data)
                 del(self.lastMessages[0])
 
+            print(self.lastMessages)
+
             try:
-                if data[0:1] == b'\x12':
+                if data == b'\x12':
                     if self.lastMessages != []:
                         c.send(bytes("Recently sent messages: \n", self.encoding))
                         for message in self.lastMessages:
@@ -58,19 +57,8 @@ class Server:
             if not data:
                 print("%s : %s : %s disconnected" % (self.timeStampStr,str(a[0]),str(a[1])))
                 self.connections.remove(c)
-                self.peers.remove(a[0])
                 c.close()
-                self.sendPeers()
                 break
-
-    def sendPeers(self):
-        p = ""
-        for peer in self.peers:
-            p = p + peer + ","
-        for connection in self.connections:
-            connection.send(b'\x11' + bytes(p, self.encoding))
-
-
 
 
 while True:

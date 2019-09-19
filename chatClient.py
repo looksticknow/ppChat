@@ -33,6 +33,8 @@ class Client:
         print("Successfully connected!")
 
         username = (input("Choose a username: ")).upper()
+        #self.delete_last_lines(3)
+        sock.send(b'\x12')
 
         iThread = threading.Thread(target=self.sendMsg, args=(username, sock,))
         iThread.daemon = True
@@ -42,16 +44,8 @@ class Client:
             data = sock.recv(1024)
             if not data:
                 break
-            if data[0:1] == b'\x11':
-                self.updatePeers(data[1:])
-            else:
-                print(str(data,self.encoding))
 
-    def updatePeers(self, peerData):
-        p2p.peers = str(peerData, self.encoding).split(",")[:-1]
-
-class p2p:
-    peers = ['127.0.0.1']
+            print(str(data,self.encoding))
 
 
 while True:
