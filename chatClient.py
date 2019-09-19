@@ -9,6 +9,7 @@ class Client:
     encoding = "iso-8859-1"
     dateTimeObj = datetime.now()
     timeStampStr = dateTimeObj.strftime("%H:%M")
+    username = ""
 
     def delete_last_lines(self, n):
         for _ in range(n):
@@ -30,20 +31,21 @@ class Client:
         sock.connect((address, 32555))
 
         print("Successfully connected!")
+
         username = (input("Choose a username: ")).upper()
+
         iThread = threading.Thread(target=self.sendMsg, args=(username, sock,))
         iThread.daemon = True
         iThread.start()
 
         while True:
             data = sock.recv(1024)
-            if data.fileno() != -1:
-                if not data:
-                    break
-                    if data[0:1] == b'\x11':
-                        self.updatePeers(data[1:])
-                    else:
-                        print(str(data,self.encoding))
+            if not data:
+                break
+            if data[0:1] == b'\x11':
+                self.updatePeers(data[1:])
+            else:
+                print(str(data,self.encoding))
 
     def updatePeers(self, peerData):
         p2p.peers = str(peerData, self.encoding).split(",")[:-1]
