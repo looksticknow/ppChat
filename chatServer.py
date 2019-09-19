@@ -3,6 +3,7 @@ import threading
 import sys
 import time
 from random import randint
+from datetime import datetime
 
 class Server:
     connections = []
@@ -10,6 +11,8 @@ class Server:
     peers = []
     lastMessages = []
     encoding = "iso-8859-1"
+    dateTimeObj = datetime.now()
+    timeStampStr = dateTimeObj.strftime("%d/%m/%y-%H:%M")
 
     def __init__(self):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,7 +28,8 @@ class Server:
                 cThread.start()
                 self.connections.append(c)
                 self.peers.append(a[0])
-                print(str(a[0]) + " : " + str(a[1]), "connected")
+                #print(str(a[0]) + " : " + str(a[1]), "connected")
+                print("%s : %s : %s connected" % (self.timeStampStr,str(a[0]),str(a[1])))
                 self.sendPeers()
 
 
@@ -49,7 +53,7 @@ class Server:
                 connection.send(data)
 
             if not data:
-                print(str(a[0]) + " : " + str(a[1]), "disconnected")
+                print("%s : %s : %s disconnected" % (self.timeStampStr,str(a[0]),str(a[1])))
                 self.connections.remove(c)
                 self.peers.remove(a[0])
                 c.close()
@@ -61,7 +65,7 @@ class Server:
         for peer in self.peers:
             p = p + peer + ","
         for connection in self.connections:
-            connection.send(b'\x11' + bytes(p, "utf-8"))
+            connection.send(b'\x11' + bytes(p, self.encoding))
 
 
 
