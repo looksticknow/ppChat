@@ -43,14 +43,17 @@ class Server:
                 self.lastMessages.append(data)
                 del(self.lastMessages[0])
 
-            if data[0:1] == b'\x12':
-                if self.lastMessages != []:
-                    c.send(bytes("Recently sent messages: \n", self.encoding))
-                    for message in self.lastMessages:
-                        c.send(message + bytes("\n", self.encoding))
+            try:
+                if data[0:1] == b'\x12':
+                    if self.lastMessages != []:
+                        c.send(bytes("Recently sent messages: \n", self.encoding))
+                        for message in self.lastMessages:
+                            c.send(message + bytes("\n", self.encoding))
 
-            for connection in self.connections:
-                connection.send(data)
+                for connection in self.connections:
+                    connection.send(data)
+            except BrokenPipeError:
+                pass
 
             if not data:
                 print("%s : %s : %s disconnected" % (self.timeStampStr,str(a[0]),str(a[1])))

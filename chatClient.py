@@ -17,9 +17,11 @@ class Client:
 
     def sendMsg(self, username, sock):
         while True:
-            sock.send(bytes(self.timeStampStr + ": " + username + ": " + input(""), self.encoding))
-            self.delete_last_lines(1)
-
+            try:
+                sock.send(bytes(self.timeStampStr + ": " + username + ": " + input(""), self.encoding))
+                self.delete_last_lines(1)
+            except BrokenPipeError:
+                sys.exit(0)
 
     def __init__(self, address):
 
@@ -35,12 +37,13 @@ class Client:
 
         while True:
             data = sock.recv(1024)
-            if not data:
-                break
-            if data[0:1] == b'\x11':
-                self.updatePeers(data[1:])
-            else:
-                print(str(data,self.encoding))
+            if data.fileno() != -1:
+                if not data:
+                    break
+                    if data[0:1] == b'\x11':
+                        self.updatePeers(data[1:])
+                    else:
+                        print(str(data,self.encoding))
 
     def updatePeers(self, peerData):
         p2p.peers = str(peerData, self.encoding).split(",")[:-1]
@@ -48,18 +51,18 @@ class Client:
 class p2p:
     peers = ['127.0.0.1']
 
+
 while True:
     try:
         print("Trying to connect...")
         time.sleep(randint(1,5))
-        for peer in p2p.peers:
-            try:
-                client = Client("217.160.61.229")
-            except KeyboardInterrupt:
-                print("\n Successfully exitted...")
-                sys.exit(0)
-            except:
-                pass
+        try:
+            client = Client("217.160.61.229")
+        except KeyboardInterrupt:
+            print("\n Successfully exitted...")
+            sys.exit(0)
+        except:
+            pass
 
     except KeyboardInterrupt:
         print("\n Successfully exitted...")
