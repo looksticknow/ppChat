@@ -5,6 +5,8 @@ import time
 from random import randint
 
 class Client:
+    encoding = "iso-8859-1"
+
     def delete_last_lines(self, n):
         for _ in range(n):
             sys.stdout.write('\x1b[1A') # Back to previous line
@@ -12,7 +14,7 @@ class Client:
 
     def sendMsg(self, username, sock):
         while True:
-            sock.send(bytes(username + " : " + input(""),'utf-8'))
+            sock.send(bytes(username + " : " + input("> "),self.encoding))
             self.delete_last_lines(1)
 
 
@@ -22,6 +24,7 @@ class Client:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.connect((address, 32555))
 
+        print("Successfully connected!")
         username = (input("Choose a username: ")).upper()
         iThread = threading.Thread(target=self.sendMsg, args=(username, sock,))
         iThread.daemon = True
@@ -34,10 +37,10 @@ class Client:
             if data[0:1] == b'\x11':
                 self.updatePeers(data[1:])
             else:
-                print(str(data,'utf-8'))
+                print(str(data,self.encoding))
 
     def updatePeers(self, peerData):
-        p2p.peers = str(peerData, "utf-8").split(",")[:-1]
+        p2p.peers = str(peerData, self.encoding).split(",")[:-1]
 
 class p2p:
     peers = ['127.0.0.1']
