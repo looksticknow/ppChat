@@ -12,7 +12,6 @@ class Client:
 
     def sendMsg(self, username, sock):
         while True:
-            print("Hello")
             sock.send(bytes(username + " : " + input(""),'utf-8'))
             self.delete_last_lines(1)
 
@@ -23,7 +22,6 @@ class Client:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.connect((address, 32555))
 
-        print("Successfully connected!")
         username = (input("Choose a username: ")).upper()
         iThread = threading.Thread(target=self.sendMsg, args=(username, sock,))
         iThread.daemon = True
