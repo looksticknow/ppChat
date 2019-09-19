@@ -17,7 +17,7 @@ class Client:
 
     def sendMsg(self, username, sock):
         while True:
-            sock.send(bytes(self.timeStampStr + " : " + username + " : " + input(""), self.encoding))
+            sock.send(bytes(self.timeStampStr + ": " + username + ": " + input(""), self.encoding))
             self.delete_last_lines(1)
 
 
