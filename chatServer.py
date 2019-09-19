@@ -6,7 +6,11 @@ from random import randint
 
 class Server:
     connections = []
+    lenConnections = len(connections)
     peers = []
+    lastMessages = []
+    encoding = "iso-8859-1"
+
     def __init__(self):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -24,11 +28,26 @@ class Server:
                 print(str(a[0]) + " : " + str(a[1]), "connected")
                 self.sendPeers()
 
+
     def handler(self,c,a):
         while True:
             data = c.recv(1024)
+
+            if len(self.lastMessages) < 10 and data != b'\x12':
+                self.lastMessages.append(data)
+            else:
+                self.lastMessages.append(data)
+                del(self.lastMessages[0])
+
+            if data[0:1] == b'\x12':
+                if self.lastMessages != []:
+                    c.send(bytes("Recently sent messages: \n", self.encoding))
+                    for message in self.lastMessages:
+                        c.send(message + bytes("\n", self.encoding))
+
             for connection in self.connections:
                 connection.send(data)
+
             if not data:
                 print(str(a[0]) + " : " + str(a[1]), "disconnected")
                 self.connections.remove(c)
