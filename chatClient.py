@@ -2,6 +2,7 @@ import socket
 import threading
 import sys
 import time
+import os
 from random import randint
 from datetime import datetime
 
@@ -31,9 +32,7 @@ class Client:
         sock.connect((address, 32555))
 
         print("Successfully connected!")
-
         username = (input("Choose a username: ")).upper()
-        #self.delete_last_lines(3)
         sock.send(b'\x12')
 
         iThread = threading.Thread(target=self.sendMsg, args=(username, sock,))
@@ -44,10 +43,10 @@ class Client:
             data = sock.recv(1024)
             if not data:
                 break
-
             print(str(data,self.encoding))
 
 
+os.system('cls' if os.name == 'nt' else 'clear')
 while True:
     try:
         print("Trying to connect...")

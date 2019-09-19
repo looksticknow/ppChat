@@ -2,6 +2,7 @@ import socket
 import threading
 import sys
 import time
+import os
 from random import randint
 from datetime import datetime
 
@@ -40,8 +41,6 @@ class Server:
                 self.lastMessages.append(data)
                 del(self.lastMessages[0])
 
-            print(self.lastMessages)
-
             try:
                 if data == b'\x12':
                     if self.lastMessages != []:
@@ -61,6 +60,7 @@ class Server:
                 break
 
 
+os.system('cls' if os.name == 'nt' else 'clear')
 while True:
     try:
         print("Trying to start server...")
