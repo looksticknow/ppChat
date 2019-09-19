@@ -3,9 +3,12 @@ import threading
 import sys
 import time
 from random import randint
+from datetime import datetime
 
 class Client:
     encoding = "iso-8859-1"
+    dateTimeObj = datetime.now()
+    timeStampStr = dateTimeObj.strftime("%H:%M")
 
     def delete_last_lines(self, n):
         for _ in range(n):
@@ -14,7 +17,7 @@ class Client:
 
     def sendMsg(self, username, sock):
         while True:
-            sock.send(bytes(username + " : " + input("> "),self.encoding))
+            sock.send(bytes(self.timeStampStr + " : " + username + " : " + input(""), self.encoding))
             self.delete_last_lines(1)
 
 
